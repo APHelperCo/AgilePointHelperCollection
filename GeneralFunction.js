@@ -455,7 +455,6 @@ function dayDifferent(d1, d2) {
 }
 
 function getMiddlewareHostName() {
-    return "http://" + window.location.hostname + ":8090";
 
     if (eFormHelper.formConfiguration.currentRenderMode == 'runtime') {
         return fetchSystemVariableValue("BARISTA_MIDDLEWARE");
