@@ -1,10 +1,3 @@
-/*
- * JQuery WYSIWYG Web Form Designer
- * Copyright 2015 AgilePoint Inc
- */
-
-/* Add your JS code Here (Press Ctrl+Space keys for intellisense) */
-
 // Get Field value
 function getFormFieldValue(field) {
     let res;
@@ -521,12 +514,22 @@ function isEmptyOrBlank(value) {
         case "Please Select":
             return true;
             break;
+        case null:
+            return true;
+        case undefined:
+            return true;
         default:
             if (Array.isArray(value)) {
                 if (value.length <= 0) {
                     return true;
                 }
             }
+
+            if(value?.toString()?.trim() == "")
+            {
+                return true;
+            }
+
             break;
     }
     return false;
@@ -542,7 +545,7 @@ function viewSubformButton() {
 function editSubformButton() {
     $($(this).context.activeElement)
         .parents(".subFormContentRowChildWrapper")
-        .find(".viewSubFormRow")
+        .find(".editSubFormRow")
         .click();
 }
 
@@ -821,4 +824,78 @@ function convertTo2DecimalPlace(value)
     }
     let parseValue = parseFloat(value);
     return parseValue.toFixed(2);
+}
+
+function delayExecute(milliSeconds)
+{
+    return new Promise(resolve => setTimeout(resolve, milliSeconds));
+}
+
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (Math.random() * 16) | 0,
+            v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
+
+function waitingDialogClose()
+{
+    return new Promise((resolve) => {
+        $(document).on('click', 'a.k-window-action.k-link', function (event) {
+            resolve(true);
+        });
+    });
+}
+
+function convertPropertyToString(Obj)
+{
+    let propertyList = Object.keys(Obj);
+    for(let i = 0; i < propertyList.length; i++)
+    {
+        if(typeof Obj[propertyList[i]] === 'object')
+        {
+            Obj[propertyList[i]] = convertPropertyToString(Obj[propertyList[i]]);
+        }
+        else
+        {
+            Obj[propertyList[i]] = Obj[propertyList[i]]?.toString();
+        }
+    }
+
+    return Obj;
+}
+
+function getAPFormASPDF()
+{
+    return new Promise(async (resolve, reject) => {
+        try {
+            eFormHelper.getFormAsPDF(options, function (result) {
+                if (result.isSuccess) {
+                    resolve(result);
+                } else {
+                    reject(result.error);
+                }
+            });
+        }
+        catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function getFormData() {
+    try {
+        let data = [];
+        eFormHelper.getFormData(function (result) {
+            if (result.isSuccess) {
+                data = result.data;
+            } else {
+                console.error(result.error);
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
 }
